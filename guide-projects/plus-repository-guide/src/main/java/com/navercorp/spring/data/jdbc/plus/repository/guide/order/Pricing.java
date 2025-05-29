@@ -44,14 +44,16 @@ public final class Pricing {
 
 	@Override
 	public boolean equals(Object obj) {
+		if(obj.equals(this)){
+			return true;
+		}
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null || getClass() != obj.getClass()) {
+		if (!(obj instanceof Pricing pricing)){
 			return false;
 		}
 
-		Pricing pricing = (Pricing)obj;
 		return Objects.equals(quantity, pricing.quantity)
 			&& Objects.equals(price.stripTrailingZeros(), pricing.price.stripTrailingZeros());
 	}
