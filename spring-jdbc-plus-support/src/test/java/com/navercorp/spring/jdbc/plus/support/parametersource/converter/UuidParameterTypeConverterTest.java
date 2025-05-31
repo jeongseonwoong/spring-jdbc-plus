@@ -21,8 +21,10 @@ package com.navercorp.spring.jdbc.plus.support.parametersource.converter;
 import static org.assertj.core.api.Assertions.*;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.assertj.core.api.Assertions;
 import org.javaunit.autoparams.AutoSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -67,4 +69,18 @@ class UuidParameterTypeConverterTest {
 		assertThat(actual).isEqualTo(source.toString());
 		assertThat(UUID.fromString(actual)).isEqualTo(source);
 	}
+
+	@ParameterizedTest
+	@AutoSource
+	void uuidToStringBuffer(UUID source){
+		//given
+		UuidParameterTypeConverter.UuidToStringBufferTypeConverter sut = UuidParameterTypeConverter.UuidToStringBufferTypeConverter.INSTANCE;
+
+		//when
+		StringBuffer actual = sut.convert(source);
+
+		//then
+		assertThat((Object) actual).isInstanceOf(StringBuffer.class);
+	}
+
 }
