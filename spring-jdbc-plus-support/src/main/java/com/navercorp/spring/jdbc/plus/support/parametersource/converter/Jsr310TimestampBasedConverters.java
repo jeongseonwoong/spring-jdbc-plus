@@ -44,7 +44,7 @@ abstract class Jsr310TimestampBasedConverters {
 		converters.add(LocalTimeToTimestampConverter.INSTANCE);
 		converters.add(InstantToTimestampConverter.INSTANCE);
 		converters.add(ZonedDateTimeToTimestampConverter.INSTANCE);
-
+		converters.add(LocalDateTimeToTimestampConverter.INSTANCE);
 		return converters;
 	}
 
