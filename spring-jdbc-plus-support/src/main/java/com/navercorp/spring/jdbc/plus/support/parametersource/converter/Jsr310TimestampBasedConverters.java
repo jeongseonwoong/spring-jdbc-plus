@@ -19,11 +19,7 @@
 package com.navercorp.spring.jdbc.plus.support.parametersource.converter;
 
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -97,6 +93,22 @@ abstract class Jsr310TimestampBasedConverters {
 		@NonNull
 		public Timestamp convert(ZonedDateTime source) {
 			return Timestamp.from(source.toInstant());
+		}
+	}
+
+	/**
+	 * PostgreSQL, MySQL, MariaDB, H2 automatically convert LocalDatetime -> TIMESTAMP OR DATETIME
+	 * If you are using Oracle add this converter from 'getConvertersToRegister()'
+	 */
+	enum LocalDateTimeToTimestampConverter implements Converter<LocalDateTime, Timestamp>{
+		INSTANCE;
+
+		LocalDateTimeToTimestampConverter(){
+		}
+
+		@NonNull
+		public Timestamp convert(LocalDateTime source){
+			return Timestamp.valueOf(source);
 		}
 	}
 }
