@@ -55,7 +55,7 @@ class DefaultJdbcParameterSourceConverterTest {
 		// when
 		Object str = sut.convert(paramName, "sample");
 		Object instant = sut.convert(paramName, Instant.now());
-		Object localDateTime = sut.convert(paramName, LocalDateTime.now());
+		Object timestamp = sut.convert(paramName, LocalDateTime.now());
 		Object localDate = sut.convert(paramName, LocalDate.now());
 		Object zonedDateTime = sut.convert(paramName, LocalDate.now());
 		Object enumName = sut.convert(paramName, Season.SPRING);
@@ -67,7 +67,7 @@ class DefaultJdbcParameterSourceConverterTest {
 		// then
 		assertThat(str).isEqualTo(":sample:");
 		assertThat(instant).isExactlyInstanceOf(Timestamp.class);
-		assertThat(localDateTime).isExactlyInstanceOf(LocalDateTime.class);
+		assertThat(timestamp).isExactlyInstanceOf(Timestamp.class);
 		assertThat(localDate).isExactlyInstanceOf(Timestamp.class);
 		assertThat(zonedDateTime).isExactlyInstanceOf(Timestamp.class);
 		assertThat(enumName).isExactlyInstanceOf(String.class);
