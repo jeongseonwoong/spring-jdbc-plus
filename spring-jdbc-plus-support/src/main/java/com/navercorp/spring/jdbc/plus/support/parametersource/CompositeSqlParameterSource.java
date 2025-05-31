@@ -41,11 +41,8 @@ public class CompositeSqlParameterSource implements SqlParameterSource {
 	 * @param sqlParameterSources the sql parameter sources
 	 */
 	public CompositeSqlParameterSource(SqlParameterSource... sqlParameterSources) {
-		if (sqlParameterSources == null) {
-			this.sqlParameterSources = Collections.emptyList();
-		} else {
-			this.sqlParameterSources = Arrays.asList(sqlParameterSources);
-		}
+		this.sqlParameterSources = sqlParameterSources == null ?
+			Collections.emptyList() : Arrays.asList(sqlParameterSources);
 	}
 
 	/**
