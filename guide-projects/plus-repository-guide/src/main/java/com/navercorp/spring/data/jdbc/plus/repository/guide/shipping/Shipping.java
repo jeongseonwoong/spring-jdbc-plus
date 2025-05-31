@@ -20,6 +20,9 @@ package com.navercorp.spring.data.jdbc.plus.repository.guide.shipping;
 
 import java.util.UUID;
 
+import com.navercorp.spring.data.jdbc.plus.repository.guide.common.exception.ErrorCode;
+import com.navercorp.spring.data.jdbc.plus.repository.guide.common.exception.InvalidValueException;
+import jakarta.annotation.PostConstruct;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.data.relational.core.mapping.Table;
@@ -36,8 +39,6 @@ import com.navercorp.spring.data.jdbc.plus.repository.guide.order.Order;
  */
 @Table("n_shipping")
 @Getter
-@Builder
-@AllArgsConstructor
 public class Shipping {
 	@Id
 	@With
@@ -45,11 +46,25 @@ public class Shipping {
 
 	private final AggregateReference<Order, Long> orderId;
 
-	private String receiverAddress;
+	private final String receiverAddress;
 
 	private String memo;
 
+	@Builder
+	public Shipping(UUID id, AggregateReference<Order,Long> orderId, String receiverAddress, String memo){
+		this.id = id;
+		this.orderId = orderId;
+		this.receiverAddress = receiverAddress;
+		validateReceiverAddress();
+		this.memo = memo;
+	}
+
 	public void changeMemo(String memo) {
 		this.memo = memo;
+	}
+
+	private void validateReceiverAddress(){
+		if(this.receiverAddress == null || this.receiverAddress.isBlank() || this.receiverAddress.isEmpty())
+			throw new InvalidValueException(ErrorCode.INVALID_ADDRESS);
 	}
 }
