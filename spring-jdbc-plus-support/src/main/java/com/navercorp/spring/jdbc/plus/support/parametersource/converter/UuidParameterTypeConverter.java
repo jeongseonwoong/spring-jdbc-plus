@@ -61,4 +61,19 @@ public class UuidParameterTypeConverter {
 			return source.toString();
 		}
 	}
+
+
+	public enum UuidToStringBufferTypeConverter implements Converter<UUID,StringBuffer>{
+		/**
+		 * Instance uuid to StringBuffer type converter.
+		 */
+		INSTANCE;
+
+		@Override
+		public StringBuffer convert(UUID source) {
+			StringBuffer sb = new StringBuffer(source.toString());
+			return sb;
+		}
+	}
+
 }
