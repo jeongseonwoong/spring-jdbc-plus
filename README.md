@@ -1,261 +1,76 @@
 [![GitHub release](https://img.shields.io/github/v/release/naver/spring-jdbc-plus.svg)](https://img.shields.io/github/v/release/naver/spring-jdbc-plus.svg?include_prereleases)
 [![GitHub license](https://img.shields.io/github/license/naver/spring-jdbc-plus.svg)](https://github.com/naver/spring-jdbc-plus.js/blob/master/LICENSE)
 
-# Spring JDBC Plus ![build](https://github.com/naver/spring-jdbc-plus/actions/workflows/gradle.yml/badge.svg) [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/naver/spring-jdbc-plus) [![Project Diagrams](https://sourcespy.com/shield.svg)](https://sourcespy.com/github/naverspringjdbcplus/)
+## Goal
+ Spring-jdbc-plus는 기존 Spring Data Jdbc의 기능을 확장하여 사용자가 간편하고 효과적으로 Repository 코드를 작성할 수 있도록 도와주는 오픈소스 라이브러리입니다.
+ 저는 sql에 바인딩 할 파라미터의 타입을 변환해주는 커스텀 컨버터를 추가해주는 작업과 길게 작성된 코드를 최신 문법을 사용하여 짧게 리팩토링 하는 작업을 하였습니다.
 
-**⚠️ Please do not use 3.3.3** <br>
-Spring JDBC Plus provides [Spring Data JDBC](https://github.com/spring-projects/spring-data-relational) based extension.
-It provides necessary features when writing more complex SQL than the functions supported by `CrudRepository`.
-If you need to use Spring Data JDBC's Persistence features and SQL execution function in combination, `Spring JDBC Plus`
-may be an appropriate choice.
+## Docker image 다운로드 및 설치하는 방법
+* docker
+```bash
+# 1. Docker 이미지를 로드
+docker pull kingseonwoong/final_2021040035:v1
 
-## Features
-
-- Support for executing custom `SQL SELECT` statements
-- Provide `BeanParameterSource`, `MapParameterSource`, `EntityParameterSource`
-- Provide parameter source converters such as `Java8Time`,`Enum`, etc.
-- Entity mapping support for complex table join SELECT results
-- `AggregateResultSet` supports mapping of `1: N` result data to `Aggregate` object graph by `LEFT OUTER JOIN` lookup
-- `JdbcRepository` provides insert / update syntax
-- Support for setting `Reactive (Flux / Mono)` type as the return type of `CustomRepository` method
-
-- [User Guide](https://github.com/naver/spring-jdbc-plus/wiki)
-
-## Getting Started (Spring Boot Starter Data JDBC Plus SQL)
-
-* Gradle
-
-    ```gradle
-    buildscript {
-        repositories {
-            mavenCentral()
-            mavenLocal()
-            maven {
-                url "https://repo.spring.io/milestone/"
-            }
-        }
-        dependencies {
-            classpath("org.springframework.boot:spring-boot-gradle-plugin:3.5.0-M1")
-        }
-    }
-
-    dependencies {
-        implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-        implementation("com.navercorp.spring:spring-boot-starter-data-jdbc-plus-sql:3.5.0-M1")
-    }
-    ```
-
-* Maven
-
-    ```xml
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0-M1</version>
-        <relativePath/>
-    </parent>
-
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jdbc</artifactId>
-    </dependency>
-
-    <dependency>
-        <groupId>com.navercorp.spring</groupId>
-        <artifactId>spring-boot-starter-data-jdbc-plus-sql</artifactId>
-        <version>3.5.0-M1</version>
-    </dependency>
-    ```
-
-* Java Codes
-
-    ```java
-    @Table("n_order")
-    @Data
-    public class Order {
-        @Id
-        @Column("order_no")
-        private Long orderNo;
-
-        @Column("price")
-        private long price;
-
-        @Column("purchaser_no")
-        private String purchaserNo;
-    }
-
-    public interface OrderRepository extends CrudRepository<Order, Long>, OrderRepositoryCustom {
-    }
-
-    public interface OrderRepositoryCustom {
-        List<Order> findByPurchaserNo(String purchaserNo);
-    }
-
-    public class OrderRepositoryImpl extends JdbcRepositorySupport<Order> implements OrderRepositoryCustom {
-        private final OrderSql sqls;
-
-        public OrderRepositoryImpl(EntityJdbcProvider entityJdbcProvider) {
-            super(Order.class, entityJdbcProvider);
-            this.sql = sqls(OrderSql::new);
-        }
-
-        @Override
-        public List<Order> findByPurchaserNo(String purchaserNo) {
-            String sql = this.sql.selectByPurchaserNo();
-            return find(sql, mapParameterSource()
-                .addValue("purchaserNo", purchaserNo));
-        }
-    }
-    ```
-
-* Groovy codes for SQL
-
-    ```groovy
-    class OrderSql extends SqlGeneratorSupport {
-
-        String selectByPurchaserNo() {
-            """
-            SELECT ${sql.columns(Order)}
-            FROM n_order
-            WHERE purchaser_no = :purchaserNo
-            """
-        }
-    }
-    ```
-
-### Cautions when writing SQL
-
-- Must use named parameters to pass parameters to SQL.
-- If parameter values are concatenated directly to String, it produces bad effects.
-    - May cause SQL injection vulnerability.
-    - Reduce efficiency of caches in PreparedStatement and NamedParameterJdbcTemplate
-
-Be careful when use string interpolation in Groovy and Kotlin.
-
-* Bad  :-1:
-    ```groovy
-    class OrderSql extends SqlGeneratorSupport {
-
-        String selectByPurchaserNo(String purchaserNo) {
-        """
-        SELECT ${sql.columns(Order)}
-        FROM n_order
-        WHERE purchaser_no = '${purchaserNo}'
-        """
-        }
-    }
-    ```
-
-* Good :+1:
-    ```groovy
-    class OrderSql extends SqlGeneratorSupport {
-
-        String selectByPurchaserNo() {
-        """
-        SELECT ${sql.columns(Order)}
-        FROM n_order
-        WHERE purchaser_no = :purchaserNo
-        """
-        }
-    }
-    ```
-
-## Annotation Guide
-
-### @SqlTableAlias
-
-``` JAVA
-@Value
-@Builder
-@Table("post")
-public class PostDto {
-    @Id
-    Long id;
-
-    @Column
-    Post post;
-
-    @SqlTableAlias("p_labels")
-    @MappedCollection(idColumn = "board_id")
-    Set<Label> labels;
-}
+# 2. 이미지 확인
+docker images
 ```
 
-`@SqlTableAlias` is used to attach a separate identifier to the table. `@SqlTableAlias` can be applied to class, field
-and method.
+## Docker container 생성하고 실행하는 방법
+```bash
+# 1. 컨테이너 생성 및 백그라운드 실행
+docker run -dit kingseonwoong/final_2021040035:v1
 
-`@SqlTableAlias` is used in the form of `@SqlTableAlias("value")` .
+# 2. 실행 중인 컨테이너 확인
+docker ps	
 
-### @SqlFunction
+# 3. 컨테이너에 접속 (CONTAINER_ID는 위에서 확인한 ID 사용)
+docker exec -it <CONTAINER_ID> /bin/bash
 
-```java
+# 4. 프로젝트 디렉토리로 이동
+cd spring-jdbc-plus-support/src/test/java/com/navercorp/spring/jdbc/plus/support/parametersource/converter
 
-@SqlTableAlias("ts")
-static class TestEntityWithNonNullValue {
-	@Column
-	private Long testerId;
+# 5. 테스트 코드 실행
+javac -cp "/app/libs/*" DefaultJdbcParameterSourceConverterTest.java
 
-	@Column("tester_nm")
-	private String testerName;
-
-	@SqlFunction(expressions = {SqlFunction.COLUMN_NAME, "0"})
-	@Column
-	private int age;
-}
-```
-
-`@SqlFunction` is typically used to map fields or methods of entity classes to SQL functions.
-
-For example, it can be utilized to define default values for certain fields, or to transform values based on specific
-conditions.
-
-### @SoftDeleteColumn
-
-```java
-
-@Value
-@Builder
-@Table("article")
-static class SoftDeleteArticle {
-	@Id
-	Long id;
-
-	String contents;
-
-	@SoftDeleteColumn.Boolean(valueAsDeleted = "true")
-	boolean deleted;
-}
-```
-
-`@SoftDeleteColumn` supports the soft delete, which is considered as deleted but does not delete actually.
-This replaces the default 'DELETE' operations to 'UPDATE' operations, by updating specific columns.
-
-You can use value types `Boolean` or `String` by Declaring `@SoftDeleteColumn.Boolean` or `@SoftDeleteColumn.String`.
-
-## Examples
-
-* [Java + Groovy SQL Example](./guide-projects/plus-sql-java-groovy-guide)
-* [Java + Kotlin SQL Example](./guide-projects/plus-sql-java-kotlin-guide)
-* [Kotlin Example](./guide-projects/plus-sql-kotlin-guide)
-
-## Getting Help
-
-- [User Guide](https://github.com/naver/spring-jdbc-plus/wiki)
-- [Reporting Issues](https://github.com/naver/spring-jdbc-plus/issues)
-
-## Coding Convention
-
-- [naver hackday-conventions-java](https://naver.github.io/hackday-conventions-java/)
-- [naver/hackday-conventions-java](https://github.com/naver/hackday-conventions-java)
-- checkstyle: ./rule/naver-checkstyle-rules.xml
-- intellij-formatter:
-  ./rule/naver-intellij-formatter.xml (https://naver.github.io/hackday-conventions-java/#editor-config)
-
-## Building from Source
 
 ```
-$  ./gradlew clean build
+
+## 디렉토리 구조
+``` bash
+/app
+├── libs/                                  # 필요한 외부 라이브러리 JAR 파일들
+└── spring-jdbc-plus-support/		
+    ├── build.gradle			   # 복사된 build.gradle 
+    └── src/				   # 소스코드 디렉토리
+        ├── main/ 			   # main 코드 디렉토리 
+        └── test/			   # test 코드 디렉토리
+            └── java/
+                └── com/
+                    └── navercorp/
+                        └── spring/
+                            └── jdbc/
+                                └── plus/
+                                    └── support/
+                                        └── parametersource/
+                                            └── converter/
+						 └── DefaultJdbcParameterSourceConverterTest.java
 ```
+
+## 실행을 마치고 종료하는 방법
+``` bash
+# 1. 컨테이너에서 나가기
+exit
+
+# 2. 컨테이너 중지
+docker stop <CONTAINER_ID>
+
+# 3. 컨테이너 삭제 
+docker rm <CONTAINER_ID>
+
+# 4. 이미지 삭제
+docker image rm final_2021040035:v1
+```
+
 
 ## License
 
