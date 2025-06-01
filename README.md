@@ -29,7 +29,7 @@ docker exec -it <CONTAINER_ID> /bin/bash
 # 4. 프로젝트 디렉토리로 이동
 cd spring-jdbc-plus-support/src/test/java/com/navercorp/spring/jdbc/plus/support/parametersource/converter
 
-# 5. 테스트 코드 실행
+# 5. 테스트 코드 컴파일
 javac -cp "/app/libs/*" DefaultJdbcParameterSourceConverterTest.java
 
 
@@ -53,7 +53,7 @@ javac -cp "/app/libs/*" DefaultJdbcParameterSourceConverterTest.java
                                     └── support/
                                         └── parametersource/
                                             └── converter/
-						 └── DefaultJdbcParameterSourceConverterTest.java
+						 └── DefaultJdbcParameterSourceConverterTest.java , UuidParameterTypeConverterTest	#변경한 Converter를 테스트하는 코드
 ```
 
 ## 실행을 마치고 종료하는 방법
