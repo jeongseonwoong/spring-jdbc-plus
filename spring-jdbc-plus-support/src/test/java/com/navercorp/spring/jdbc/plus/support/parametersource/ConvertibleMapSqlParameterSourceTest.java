@@ -39,7 +39,7 @@ import com.navercorp.spring.jdbc.plus.support.parametersource.fallback.FallbackP
 /**
  * @author Myeonghyeon Lee
  */
-class ConvertibleMapSqlParameterSourceTest {
+public class ConvertibleMapSqlParameterSourceTest {
 	private final JdbcParameterSourceConverter converter = new DefaultJdbcParameterSourceConverter(List.of());
 
 	@Test

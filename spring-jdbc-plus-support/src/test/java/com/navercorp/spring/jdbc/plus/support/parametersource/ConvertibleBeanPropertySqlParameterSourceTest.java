@@ -39,7 +39,7 @@ import com.navercorp.spring.jdbc.plus.support.parametersource.fallback.FallbackP
  * @author Myeonghyeon Lee
  * @author IAM20
  */
-class ConvertibleBeanPropertySqlParameterSourceTest {
+public class ConvertibleBeanPropertySqlParameterSourceTest {
 	private final JdbcParameterSourceConverter converter = new DefaultJdbcParameterSourceConverter(List.of());
 
 	@DisplayName("생성자에 Converter 로 null 을 넘기면 NullPointerException 이 발생합니다.")
