@@ -53,7 +53,7 @@ javac -cp "/app/libs/*" DefaultJdbcParameterSourceConverterTest.java
                                     └── support/
                                         └── parametersource/
                                             └── converter/
-						 └── DefaultJdbcParameterSourceConverterTest.java
+						 └── DefaultJdbcParameterSourceConverterTest.java , UuidParameterTypeConverterTest	#변경한 Converter를 테스트하는 코드
 ```
 
 ## 실행을 마치고 종료하는 방법
