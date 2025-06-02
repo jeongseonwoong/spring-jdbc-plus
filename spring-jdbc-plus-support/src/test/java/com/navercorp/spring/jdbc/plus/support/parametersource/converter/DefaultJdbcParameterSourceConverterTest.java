@@ -43,7 +43,7 @@ import com.navercorp.spring.jdbc.plus.support.parametersource.converter.Jsr310Ti
 /**
  * @author Myeonghyeon Lee
  */
-class DefaultJdbcParameterSourceConverterTest {
+public class DefaultJdbcParameterSourceConverterTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	void convert() {

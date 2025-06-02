@@ -18,24 +18,20 @@
 
 package com.navercorp.spring.jdbc.plus.support.parametersource.converter;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.nio.ByteBuffer;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.assertj.core.api.Assertions;
-import org.javaunit.autoparams.AutoSource;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-
 import com.navercorp.spring.jdbc.plus.support.parametersource.converter.UuidParameterTypeConverter.UuidToByteTypeConverter;
 import com.navercorp.spring.jdbc.plus.support.parametersource.converter.UuidParameterTypeConverter.UuidToStringTypeConverter;
+import org.javaunit.autoparams.AutoSource;
+import org.junit.jupiter.params.ParameterizedTest;
+
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Myeonghyeon Lee
  */
-class UuidParameterTypeConverterTest {
+public class UuidParameterTypeConverterTest {
 	private static UUID getUuidFromBytes(byte[] bytes) {
 		ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
 		long high = byteBuffer.getLong();
@@ -72,7 +68,7 @@ class UuidParameterTypeConverterTest {
 
 	@ParameterizedTest
 	@AutoSource
-	void uuidToStringBuffer(UUID source){
+	void uuidToStringBuffer(UUID source) {
 		//given
 		UuidParameterTypeConverter.UuidToStringBufferTypeConverter sut = UuidParameterTypeConverter.UuidToStringBufferTypeConverter.INSTANCE;
 

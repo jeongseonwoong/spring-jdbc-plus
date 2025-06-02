@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Myeonghyeon Lee
  */
-class EnumParameterTypeConverterTest {
+public class EnumParameterTypeConverterTest {
 	@Test
 	void enumToName() {
 		// given

@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Myeonghyeon Lee
  */
-class IterableExpandPaddingTest {
+public class IterableExpandPaddingTest {
 	private static final Random RANDOM = new Random();
 
 	private static String[] array(int size) {
