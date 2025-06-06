@@ -44,6 +44,33 @@ docker exec -it <CONTAINER_ID> /bin/bash
     spring-jdbc-plus-support/src/test/java/com/navercorp/spring/jdbc/plus/support/parametersource/*.java
 
 # 5. 컴파일 한 코드 실행 ( libs 내부에 존재하는 .jar파일들을 이용해서 컴파일 한 코드 테스트 실행. *를 통해서 .jar 파일을 가져오는 것이 인식이 되지 않아서 모두 명시적으로 적어줌) 
+# 1. 컨테이너 생성 및 백그라운드 실행
+docker run -dit kingseonwoong/final_2021040035:v1
+
+# 2. 실행 중인 컨테이너 확인
+docker ps	
+
+# 3. 컨테이너에 접속
+docker exec -it <CONTAINER_ID> /bin/bash
+
+# 4. 프로젝트 코드 컴파일
+## 4-1. Converter 관련 main 클래스 컴파일
+javac -d /app/build/classes/java/main -cp "/app/libs/*" \
+  /root/Project/src/main/java/com/navercorp/spring/jdbc/plus/support/parametersource/converter/*.java
+
+## 4-2. 기타 main 클래스 컴파일
+javac -d /app/build/classes/java/main -cp "/app/libs/*" \
+  /root/Project/src/main/java/com/navercorp/spring/jdbc/plus/support/parametersource/*.java
+
+## 4-3. Converter 관련 테스트 클래스 컴파일
+javac -d /app/build/classes/java/test -cp "/app/libs/*" \
+  /root/Project/src/test/java/com/navercorp/spring/jdbc/plus/support/parametersource/converter/*.java
+
+## 4-4. 기타 테스트 클래스 컴파일
+javac -d /app/build/classes/java/test -cp "/app/libs/*" \
+  /root/Project/src/test/java/com/navercorp/spring/jdbc/plus/support/parametersource/*.java
+
+# 5. 테스트 실행
 java -jar /app/libs/junit-console.jar \
 --class-path=/app/build/classes/java/test:/app/build/classes/java/main:\
 /app/libs/apiguardian-api-1.1.2.jar:\
@@ -72,29 +99,43 @@ java -jar /app/libs/junit-console.jar \
 /app/libs/spring-tx-6.2.2.jar:\
 /app/libs/validation-api-2.0.1.Final.jar \
 --scan-class-path
+
 ```
 
 ## 디렉토리 구조
 ``` bash
 /app
 ├── libs/                         # 도커 이미지 생성 시 build.gradle에 명시된 외부 라이브러리 JAR들을 모두 저장한 디렉토리 (JUnit 포함) (컨테이너에서 사용)
-├── build/                        # 컴파일 한 클래스 파일 저장할 디렉토리 (컨테이너에서 사용)
-└── spring-jdbc-plus-support/
-    ├── build/                   # 로컬에서 Gradle 빌드시 생성되는 디렉토리를 복사한 디렉토리 (컨테이너 내에선 사용 x)	
-    ├── build.gradle             # 로컬에서 사용한 Gradle 설정 파일을 복사한 디렉토리 (컨테이너 내에선 사용 x)
-    └── src/				   # 소스코드 디렉토리
-        ├── main/ 			   # main 코드 디렉토리 
-        └── test/			   # test 코드 디렉토리
-            └── java/
-                └── com/
-                    └── navercorp/
-                        └── spring/
-                            └── jdbc/
-                                └── plus/
-                                    └── support/
-                                        └── parametersource/
-                                            └── converter/
-						 └── DefaultJdbcParameterSourceConverterTest.java , UuidParameterTypeConverterTest, ...	# Converter를 테스트하는 코드
+└── build/                        # 컴파일한 클래스 파일 저장할 디렉토리 (컨테이너에서 사용)
+/root
+  └── Project/                  # 프로젝트 최상위 디렉토리
+      ├── build/               # 로컬에서 Gradle 빌드시 생성된 디렉토리 (컨테이너 내에선 사용 X)
+      ├── build.gradle         # 로컬에서 사용한 Gradle 설정 파일 (컨테이너 내에선 사용 X)
+      └── src/				   # 소스코드 디렉토리
+           ├── main/ 		       # main 코드 디렉토리 
+           │   └── java/
+           │       └── com/
+           │           └── navercorp/
+           │               └── spring/
+           │                   └── jdbc/
+           │                       └── plus/
+           │                           └── support/
+           │                               └── parametersource/
+           │                                   ├── JdbcParameterSource.java
+           │                                   └── ConverterA.java ...
+           └── test/			   # test 코드 디렉토리
+                └── java/
+                    └── com/
+                        └── navercorp/
+                            └── spring/
+                                └── jdbc/
+                                    └── plus/
+                                        └── support/
+                                            └── parametersource/
+                                                ├── converter/
+                                                │   ├── DefaultJdbcParameterSourceConverterTest.java
+                                                │   └── UuidParameterTypeConverterTest.java
+                                                └── OtherTestFiles.java ...
 ```
 
 ## 실행을 마치고 종료하는 방법
